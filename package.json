@@ -1,0 +1,1 @@
+{"dependencies":{"bcryptjs":"^2.4.3","express":"^4.19.2","pg":"^8.12.0"},"description":"Washington Weather and Climate Services — standalone community weather app","engines":{"node":">=20"},"main":"server.js","name":"wwcs-standalone","scripts":{"migrate":"node migrate.js","start":"node server.js"},"version":"1.0.0"}
