@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Washington Weather and Climate Services (WWCS)</title>
+<link rel="icon" type="image/webp" href="icon.webp">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img src="icon.webp" alt="WWCS logo">
+      <span><span class="name">WWCS</span><br><span class="tag">Washington Weather and Climate Services</span></span>
+    </a>
+    <nav class="main" id="mainnav"></nav>
+    <span class="userbox" id="userbox"></span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <img class="logo" src="logo.webp" alt="Washington Weather and Climate Services logo">
+    <div>
+      <h1>Washington Weather and Climate Services</h1>
+      <p>Live, community-powered weather for the Evergreen State. Spotters observe, everyone benefits.</p>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>🌤️ Live Weather Desk</h2>
+      <div id="headlines"><p class="notice">Loading Washington headlines…</p></div>
+    </section>
+
+    <section class="card">
+      <h2>⚠️ Active NWS Alerts — Washington</h2>
+      <div id="alerts"><p class="notice">Loading alerts…</p></div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:1rem">
+    <h2>📍 Washington ZIP-Code Forecast</h2>
+    <form id="zipform" class="form-row" style="align-items:flex-end">
+      <div>
+        <label for="zip">ZIP code</label>
+        <input id="zip" inputmode="numeric" maxlength="5" placeholder="e.g. 98101" required>
+      </div>
+      <div style="flex:0 0 auto"><button class="btn" type="submit">Get forecast</button></div>
+    </form>
+    <div class="error" id="ziperr" style="display:none"></div>
+    <div id="forecast"></div>
+  </section>
+
+  <section class="card" style="margin-top:1rem">
+    <h2>🛰️ Live Radar</h2>
+    <div class="radar-controls">
+      <button class="btn" id="radar-play">⏸ Pause</button>
+      <span class="radar-legend" id="radar-time"></span>
+      <span class="radar-legend">Radar: RainViewer · Map: OpenStreetMap</span>
+    </div>
+    <div id="radar"></div>
+  </section>
+
+  <section class="card" style="margin-top:1rem">
+    <h2>Explore WWCS</h2>
+    <div class="linklist">
+      <a href="observations.html">📡 Spotter observations — see what spotters are reporting →</a>
+      <a href="spotters.html">👥 Spotter Center — meet our weather spotters →</a>
+      <a href="blog.html">📰 Weather Blog — stories and analysis →</a>
+      <a href="chat.html">💬 Live Chat — talk weather with the community →</a>
+      <a href="spotter.html">✍️ Become a spotter — free registration →</a>
+    </div>
+  </section>
+</main>
+
+<footer>WWCS · Community weather for Washington State · Data: National Weather Service, Open-Meteo, RainViewer</footer>
+
+<script src="auth.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+renderHeader('index.html');
+
+// ---- Statewide headlines + alerts (live from api.weather.gov) ----
+(async function loadDesk() {
+  const headEl = document.getElementById('headlines');
+  const alertEl = document.getElementById('alerts');
+  try {
+    const r = await fetch('https://api.weather.gov/alerts/active?area=WA', {
+      headers: { Accept: 'application/geo+json' },
+    });
+    if (!r.ok) throw new Error('NWS unavailable');
+    const data = await r.json();
+    const feats = (data.features || []).slice(0, 8);
+
+    headEl.innerHTML = feats.length
+      ? feats.map(f => `
+        <div class="headline">
+          <div class="kicker">${escapeHtml(f.properties.event)}</div>
+          <div class="t">${escapeHtml(f.properties.headline || f.properties.event)}</div>
+          <div class="s">${escapeHtml((f.properties.areaDesc || '').slice(0, 140))}</div>
+        </div>`).join('')
+      : `<div class="headline">
+           <div class="kicker">Statewide</div>
+           <div class="t">No active National Weather Service alerts in Washington</div>
+           <div class="s">Quiet for now — spotters are still watching. Check the radar and chat below.</div>
+         </div>`;
+
+    alertEl.innerHTML = feats.length
+      ? feats.map(f => {
+          const sev = /warning|emergency|extreme/i.test(f.properties.severity || '') ? 'severe' : '';
+          return `<div class="alert ${sev}">
+            <div class="title">${escapeHtml(f.properties.event)}</div>
+            <div>${escapeHtml((f.properties.description || '').slice(0, 280))}…</div>
+            <div class="meta">Issued ${fmtDate(f.properties.sent)} · ${escapeHtml(f.properties.senderName || 'NWS')}</div>
+          </div>`;
+        }).join('')
+      : '<p class="notice">No active alerts statewide. Enjoy the calm!</p>';
+  } catch (e) {
+    headEl.innerHTML = '<p class="error">Could not reach the National Weather Service. Try again shortly.</p>';
+    alertEl.innerHTML = '<p class="error">Could not reach the National Weather Service. Try again shortly.</p>';
+  }
+})();
+
+// ---- ZIP-code forecast (zippopotam → Open-Meteo → NWS alerts) ----
+const WMO = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Dense drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Light showers',81:'Showers',82:'Violent showers',95:'Thunderstorm',96:'Storm w/ hail',99:'Storm w/ heavy hail'};
+
+document.getElementById('zipform').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const zip = document.getElementById('zip').value.trim();
+  const err = document.getElementById('ziperr');
+  const out = document.getElementById('forecast');
+  showError(err, '');
+  out.innerHTML = '<p class="notice">Looking up forecast…</p>';
+  try {
+    if (!/^\d{5}$/.test(zip)) throw new Error('Enter a 5-digit ZIP code.');
+    const zr = await fetch(`https://api.zippopotam.us/us/${zip}`);
+    if (!zr.ok) throw new Error('ZIP code not found.');
+    const z = await zr.json();
+    const place = z.places[0];
+    if (place['state abbreviation'] !== 'WA') throw new Error(`${zip} is in ${place['state']}, not Washington.`);
+    const lat = +place.latitude, lon = +place.longitude;
+    const label = `${place['place name']}, WA ${zip}`;
+
+    const fr = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+      `&current=temperature_2m,relative_humidity_2m,weathercode,wind_speed_10m` +
+      `&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max` +
+      `&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FLos_Angeles&forecast_days=7`);
+    if (!fr.ok) throw new Error('Forecast service unavailable.');
+    const f = await fr.json();
+    const cur = f.current;
+
+    let alertsHtml = '';
+    try {
+      const ar = await api(`/api/alerts?lat=${lat}&lon=${lon}`);
+      if (ar.alerts.length) {
+        alertsHtml = '<h3>Active alerts for this location</h3>' + ar.alerts.slice(0, 3).map(a =>
+          `<div class="alert"><div class="title">${escapeHtml(a.event)}</div><div class="meta">${escapeHtml(a.headline || '')}</div></div>`).join('');
+      }
+    } catch { /* alerts optional */ }
+
+    const days = f.daily.time.map((t, i) => {
+      const d = new Date(t + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      return `<div class="forecast-day">
+        <span class="d">${d}</span>
+        <span>${escapeHtml(WMO[f.daily.weathercode[i]] || '')}</span>
+        <span style="margin-left:auto"><strong>${Math.round(f.daily.temperature_2m_max[i])}°</strong> / ${Math.round(f.daily.temperature_2m_min[i])}°F</span>
+        <span class="badge">💧 ${f.daily.precipitation_probability_max[i] ?? 0}%</span>
+      </div>`;
+    }).join('');
+
+    out.innerHTML = `
+      <h3>${escapeHtml(label)}</h3>
+      <p>Right now: <strong>${Math.round(cur.temperature_2m)}°F</strong>, ${escapeHtml(WMO[cur.weathercode] || '')},
+      humidity ${cur.relative_humidity_2m}%, wind ${Math.round(cur.wind_speed_10m)} mph</p>
+      ${alertsHtml}
+      <h3>7-day outlook</h3>${days}
+      <p class="radar-legend">Forecast: Open-Meteo · Alerts: National Weather Service</p>`;
+  } catch (ex) {
+    showError(err, ex.message);
+    out.innerHTML = '';
+  }
+});
+
+// ---- Live radar (RainViewer tiles on Leaflet) ----
+(async function initRadar() {
+  const timeEl = document.getElementById('radar-time');
+  try {
+    const map = L.map('radar').setView([47.4, -120.5], 7);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors', maxZoom: 12,
+    }).addTo(map);
+
+    const rv = await (await fetch('https://api.rainviewer.com/public/weather-maps.json')).json();
+    const frames = [...(rv.radar?.past || []), ...(rv.radar?.nowcast || [])];
+    if (!frames.length) throw new Error('no frames');
+    const layers = frames.map(f =>
+      L.tileLayer(`https://tilecache.rainviewer.com${f.path}/256/{z}/{x}/{y}/2/1_1.png`, { opacity: 0.65, zIndex: 10 })
+    );
+    let i = frames.length - 1, timer = null;
+    const show = (n) => {
+      layers.forEach(l => map.removeLayer(l));
+      layers[n].addTo(map);
+      timeEl.textContent = 'Frame: ' + new Date(frames[n].time * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        + (n >= (rv.radar.past || []).length ? ' (forecast)' : '');
+    };
+    show(i);
+    const play = () => { timer = setInterval(() => { i = (i + 1) % layers.length; show(i); }, 700); };
+    play();
+    document.getElementById('radar-play').addEventListener('click', (e) => {
+      if (timer) { clearInterval(timer); timer = null; e.target.textContent = '▶ Play'; }
+      else { play(); e.target.textContent = '⏸ Pause'; }
+    });
+  } catch {
+    document.getElementById('radar').innerHTML = '<p class="error" style="padding:1rem">Radar is unavailable right now.</p>';
+    timeEl.textContent = '';
+  }
+})();
+</script>
+</body>
+</html>

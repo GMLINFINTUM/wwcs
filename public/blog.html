@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather Blog — WWCS</title>
+<link rel="icon" type="image/webp" href="icon.webp">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="icon.webp" alt="WWCS logo">
+      <span><span class="name">WWCS</span><br><span class="tag">Washington Weather and Climate Services</span></span></a>
+    <nav class="main" id="mainnav"></nav>
+    <span class="userbox" id="userbox"></span>
+  </div>
+</header>
+<main>
+  <section class="card" id="write">
+    <h2>✍️ Publish a Post</h2>
+    <div id="formwrap"><p class="notice">Checking sign-in…</p></div>
+  </section>
+  <section class="card" style="margin-top:1rem">
+    <h2>📰 Weather Blog</h2>
+    <div id="posts"><p class="notice">Loading posts…</p></div>
+  </section>
+</main>
+<footer>WWCS · Community weather for Washington State</footer>
+<script src="auth.js"></script>
+<script>
+(async function () {
+  const user = await renderHeader('blog.html');
+  const wrap = document.getElementById('formwrap');
+  if (user) {
+    wrap.innerHTML = `
+      <div class="error" id="blogerr" style="display:none"></div>
+      <div class="notice" id="blogok" style="display:none"></div>
+      <form id="blogform">
+        <label for="btitle">Title</label>
+        <input id="btitle" required maxlength="200" placeholder="Storm recap: what the models missed">
+        <label for="bbody">Body</label>
+        <textarea id="bbody" required placeholder="Tell the story…"></textarea>
+        <button class="btn" type="submit">Publish post</button>
+      </form>`;
+    document.getElementById('blogform').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('blogerr'), ok = document.getElementById('blogok');
+      showError(err, ''); showError(ok, '');
+      try {
+        await api('/api/blog', { method: 'POST', body: JSON.stringify({
+          title: document.getElementById('btitle').value,
+          body: document.getElementById('bbody').value,
+        })});
+        showError(ok, 'Post published!');
+        e.target.reset();
+        loadPosts();
+      } catch (ex) { showError(err, ex.message); }
+    });
+  } else {
+    wrap.innerHTML = '<p>Only registered spotters can publish. <a href="spotter.html">Sign in or register — it\'s free.</a></p>';
+  }
+  loadPosts();
+})();
+
+async function loadPosts() {
+  const el = document.getElementById('posts');
+  try {
+    const { posts } = await api('/api/blog');
+    el.innerHTML = posts.length
+      ? posts.map(p => `<article class="post">
+          <h3>${escapeHtml(p.title)}</h3>
+          <div class="meta">By ${escapeHtml(p.author)} · ${fmtDate(p.created_at)}</div>
+          <div class="body">${escapeHtml(p.body)}</div>
+        </article>`).join('')
+      : '<p class="notice">No posts yet — spotters, share your first weather story!</p>';
+  } catch (e) {
+    el.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotter Observations — WWCS</title>
+<link rel="icon" type="image/webp" href="icon.webp">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="icon.webp" alt="WWCS logo">
+      <span><span class="name">WWCS</span><br><span class="tag">Washington Weather and Climate Services</span></span></a>
+    <nav class="main" id="mainnav"></nav>
+    <span class="userbox" id="userbox"></span>
+  </div>
+</header>
+<main>
+  <section class="card" id="submit">
+    <h2>📡 Submit an Observation</h2>
+    <div id="formwrap"><p class="notice">Checking sign-in…</p></div>
+  </section>
+  <section class="card" style="margin-top:1rem">
+    <h2>All Spotter Observations</h2>
+    <div id="list"><p class="notice">Loading observations…</p></div>
+  </section>
+</main>
+<footer>WWCS · Community weather for Washington State</footer>
+<script src="auth.js"></script>
+<script>
+const TYPES = ['Clear','Partly cloudy','Overcast','Fog','Drizzle','Rain','Heavy rain','Snow','Heavy snow','Thunderstorm','Hail','Wind','Flood','Other'];
+
+(async function () {
+  const user = await renderHeader('observations.html');
+  const wrap = document.getElementById('formwrap');
+  if (user) {
+    wrap.innerHTML = `
+      <div class="error" id="obserr" style="display:none"></div>
+      <div class="notice" id="obsok" style="display:none"></div>
+      <form id="obsform">
+        <div class="form-row">
+          <div><label for="oloc">Location</label><input id="oloc" required placeholder="e.g. Bellevue"></div>
+          <div><label for="ozip">ZIP</label><input id="ozip" maxlength="5" inputmode="numeric" placeholder="98004"></div>
+        </div>
+        <div class="form-row">
+          <div><label for="otype">Weather type</label><select id="otype">${TYPES.map(t => `<option>${t}</option>`).join('')}</select></div>
+          <div><label for="otemp">Temperature (°F)</label><input id="otemp" type="number" step="0.1" placeholder="e.g. 54"></div>
+          <div><label for="owhen">Observed at</label><input id="owhen" type="datetime-local"></div>
+        </div>
+        <label for="onotes">Notes</label>
+        <textarea id="onotes" placeholder="What are you seeing? Hail size, road conditions, damage…"></textarea>
+        <button class="btn" type="submit">Post observation</button>
+      </form>`;
+    document.getElementById('obsform').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const err = document.getElementById('obserr'), ok = document.getElementById('obsok');
+      showError(err, ''); showError(ok, '');
+      try {
+        await api('/api/observations', { method: 'POST', body: JSON.stringify({
+          location: document.getElementById('oloc').value,
+          zip: document.getElementById('ozip').value,
+          weather_type: document.getElementById('otype').value,
+          temperature_f: document.getElementById('otemp').value,
+          observed_at: document.getElementById('owhen').value || undefined,
+          notes: document.getElementById('onotes').value,
+        })});
+        showError(ok, 'Observation posted — thanks, spotter!');
+        e.target.reset();
+        loadList();
+      } catch (ex) { showError(err, ex.message); }
+    });
+  } else {
+    wrap.innerHTML = '<p>Only registered spotters can submit observations. <a href="spotter.html">Sign in or register — it\'s free.</a></p>';
+  }
+  loadList();
+})();
+
+async function loadList() {
+  const list = document.getElementById('list');
+  try {
+    const { observations } = await api('/api/observations');
+    list.innerHTML = observations.length
+      ? observations.map(o => `<div class="obs">
+          <div><span class="badge">${escapeHtml(o.weather_type)}</span>
+          <strong>${escapeHtml(o.location)}</strong>${o.zip ? ' ' + escapeHtml(o.zip) : ''}</div>
+          <div>${o.temperature_f != null ? Math.round(o.temperature_f) + '°F · ' : ''}${escapeHtml(o.notes || '')}</div>
+          <div class="meta">Reported by ${escapeHtml(o.spotter_name)} · ${fmtDate(o.observed_at || o.created_at)}</div>
+        </div>`).join('')
+      : '<p class="notice">No observations yet. Spotters, be the first to report!</p>';
+  } catch (e) {
+    list.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+  }
+}
+</script>
+</body>
+</html>

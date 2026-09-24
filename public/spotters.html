@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotter Center — WWCS</title>
+<link rel="icon" type="image/webp" href="icon.webp">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="icon.webp" alt="WWCS logo">
+      <span><span class="name">WWCS</span><br><span class="tag">Washington Weather and Climate Services</span></span></a>
+    <nav class="main" id="mainnav"></nav>
+    <span class="userbox" id="userbox"></span>
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h2>👥 Spotter Center</h2>
+    <p id="welcome">Our volunteer spotters report real conditions from every corner of Washington.</p>
+    <div id="actions" style="margin:.75rem 0"></div>
+  </section>
+  <section class="card" style="margin-top:1rem">
+    <h2>Registered Spotters</h2>
+    <div id="list"><p class="notice">Loading spotters…</p></div>
+  </section>
+</main>
+<footer>WWCS · Community weather for Washington State</footer>
+<script src="auth.js"></script>
+<script>
+(async function () {
+  const user = await renderHeader('spotters.html');
+  const actions = document.getElementById('actions');
+  actions.innerHTML = user
+    ? `<a class="btn" href="observations.html#submit">Submit an observation</a>
+       <a class="btn secondary" href="blog.html#write">Write a blog post</a>
+       <a class="btn secondary" href="chat.html">Join live chat</a>`
+    : `<a class="btn" href="spotter.html">Register to become a spotter</a>`;
+  if (user) document.getElementById('welcome').textContent =
+    `Welcome back, ${user.name}! ${user.county ? `Reporting from ${user.county} County. ` : ''}Thanks for keeping Washington informed.`;
+
+  const list = document.getElementById('list');
+  try {
+    const { spotters } = await api('/api/spotters');
+    list.innerHTML = spotters.length
+      ? `<table class="data"><thead><tr><th>Name</th><th>County</th><th>Observations</th><th>Blog posts</th><th>Spotter since</th></tr></thead>
+         <tbody>${spotters.map(s => `<tr>
+           <td><strong>${escapeHtml(s.name)}</strong></td>
+           <td>${escapeHtml(s.county || '—')}</td>
+           <td>${s.observations}</td><td>${s.posts}</td>
+           <td>${fmtDate(s.created_at)}</td></tr>`).join('')}</tbody></table>`
+      : '<p class="notice">No spotters yet — <a href="spotter.html">be the first!</a></p>';
+  } catch (e) {
+    list.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+  }
+})();
+</script>
+</body>
+</html>
