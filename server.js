@@ -31,6 +31,11 @@ function needDb(res) {
 
 // ---- Middleware ----
 app.use(express.json({ limit: '64kb' }));
+// PWA: serve the web app manifest with its proper content type.
+app.use((req, res, next) => {
+  if (req.path.endsWith('.webmanifest')) res.type('application/manifest+json');
+  next();
+});
 app.use(express.static('public', { extensions: ['html'] }));
 
 function parseCookies(req) {
