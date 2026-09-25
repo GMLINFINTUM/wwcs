@@ -30,6 +30,10 @@
     <p id="welcome">Our volunteer spotters report real conditions from every corner of Washington.</p>
     <div id="actions" style="margin:.75rem 0"></div>
   </section>
+  <section class="card" id="traffic" style="margin-top:1rem; display:none">
+    <h2>📊 Site Traffic</h2>
+    <div id="traffic-body"><p class="notice">Loading…</p></div>
+  </section>
   <section class="card" style="margin-top:1rem">
     <h2>Registered Spotters</h2>
     <div id="list"><p class="notice">Loading spotters…</p></div>
@@ -48,6 +52,44 @@
     : `<a class="btn" href="spotter.html">Register to become a spotter</a>`;
   if (user) document.getElementById('welcome').textContent =
     `Welcome back, ${user.name}! ${user.county ? `Reporting from ${user.county} County. ` : ''}Thanks for keeping Washington informed.`;
+
+  // Site traffic (visible to logged-in spotters only).
+  if (user) {
+    const card = document.getElementById('traffic');
+    const body = document.getElementById('traffic-body');
+    card.style.display = '';
+    try {
+      const stats = await api('/api/stats');
+      const maxDay = Math.max(1, ...stats.byDay.map((d) => d.hits));
+      body.innerHTML =
+        `<p style="font-size:1.5rem;margin:.25rem 0"><strong>${stats.total.toLocaleString()}</strong> total page views</p>` +
+        (stats.byPage.length
+          ? `<h3 style="margin:.75rem 0 .25rem">Views by page</h3>
+             <table class="data"><thead><tr><th>Page</th><th>Views</th></tr></thead><tbody>` +
+             stats.byPage
+               .map((p) => `<tr><td>${escapeHtml(p.path)}</td><td>${p.hits.toLocaleString()}</td></tr>`)
+               .join('') +
+             `</tbody></table>`
+          : '<p class="notice">No page views recorded yet.</p>') +
+        (stats.byDay.length
+          ? `<h3 style="margin:.75rem 0 .25rem">Last 30 days</h3>` +
+            stats.byDay
+              .map(
+                (d) =>
+                  `<div style="display:flex;align-items:center;gap:.5rem;margin:.15rem 0;font-size:.9rem">` +
+                  `<span style="width:5.5rem;color:#555">${escapeHtml(d.day.slice(5))}</span>` +
+                  `<span style="display:inline-block;height:.7rem;background:var(--teal);border-radius:3px;width:${Math.max(
+                    3,
+                    Math.round((d.hits / maxDay) * 120)
+                  )}px"></span>` +
+                  `<strong>${d.hits.toLocaleString()}</strong></div>`
+              )
+              .join('')
+          : '');
+    } catch (e) {
+      body.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+    }
+  }
 
   const list = document.getElementById('list');
   try {
