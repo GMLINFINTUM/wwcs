@@ -30,6 +30,7 @@ async function renderHeader(active) {
       ['spotters.html', 'Spotter Center'],
       ['blog.html', 'Blog'],
       ['chat.html', 'Live Chat'],
+      ['about.html', 'About Us'],
     ];
     nav.innerHTML = links
       .map(([href, label]) => `<a href="${href}" class="${href === active ? 'active' : ''}">${label}</a>`)

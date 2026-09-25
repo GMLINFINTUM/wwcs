@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0b3d5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WWCS">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<script src="/pwa.js" defer></script>
+<title>About Us — WWCS</title>
+<link rel="icon" type="image/webp" href="icon.webp">
+<link rel="stylesheet" href="styles.css">
+<style>
+.plan-card { margin-bottom: 1.25rem; }
+.plan-card h2 { font-size: 1.35rem; }
+.plan { --wash: #f2f7f9; }
+.plan .metric-label { font-size: .85rem; color: var(--muted); }
+.plan .card.tint { background: var(--light); }
+.plan .card { box-shadow: none; border: 1px solid #d8e8ee; }
+* { box-sizing: border-box; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+html, body { margin:0; padding:0; background:#e7edf1; color:var(--ink); font-family:'Liberation Sans','Noto Sans',sans-serif; }
+.plan .cover { color:white; background:linear-gradient(155deg,#071c33 0%,#0b3457 56%,#0e6b75 100%); padding:.66in .72in; }
+.plan .logo { width:1.05in; height:1.05in; object-fit:contain; border-radius:18px; border:1px solid rgba(255,255,255,.28); }
+.plan .kicker { margin-top:.62in; color:#a9edf0; text-transform:uppercase; letter-spacing:.16em; font-size:8.3pt; font-weight:700; }
+h1 { font-family:'Noto Serif','Liberation Serif',serif; font-size:31pt; line-height:1.03; letter-spacing:-.02em; margin:.15in 0 .15in; }
+.plan .cover .sub { font-size:15pt; line-height:1.35; color:#e4f5f6; max-width:5.8in; }
+.plan .cover-summary { margin-top:.55in; width:5.8in; padding:.22in .25in; border-left:4px solid #5be0dc; background:rgba(255,255,255,.09); font-size:10.8pt; line-height:1.5; }
+.plan .meta { position:absolute; left:.72in; bottom:.7in; color:#cae5e7; font-size:9pt; }
+.plan .header { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:.12in; margin-bottom:.18in; color:var(--muted); font-size:8.3pt; }
+.plan .header strong { color:var(--navy); letter-spacing:.05em; }
+.plan .footer { position:absolute; left:.68in; right:.68in; bottom:.20in; display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:.08in; color:#76838d; font-size:8pt; }
+h2 { font-family:'Noto Serif','Liberation Serif',serif; color:var(--navy); font-size:20pt; line-height:1.12; margin:0 0 .16in; letter-spacing:-.01em; }
+h3 { color:var(--blue); font-size:11.5pt; margin:.12in 0 .05in; }
+p { margin:.045in 0 .085in; }
+ul, ol { margin:.05in 0 .10in .19in; padding-left:.1in; }
+li { margin:.025in 0; }
+.plan .lead { font-size:12pt; line-height:1.48; color:#314453; }
+.plan .rule { height:3px; width:.68in; background:var(--teal); margin:0 0 .22in; }
+.plan .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.18in; }
+.plan .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.13in; }
+.plan .card { border:1px solid var(--line); border-radius:10px; padding:.12in .14in; background:white; break-inside:avoid; }
+.plan .card.tint { background:var(--wash); border-color:#d7e8ec; }
+.plan .card h3 { margin-top:0; }
+.plan .metric { color:var(--navy); font-size:22pt; font-weight:700; line-height:1; }
+.plan .metric-label { color:var(--muted); font-size:8.5pt; margin-top:.05in; }
+.plan .callout { margin:.17in 0; padding:.15in .18in; background:var(--sky); border-left:4px solid var(--teal); }
+.plan .warning { background:#fff7df; border-left-color:var(--gold); }
+.plan .flow { display:grid; grid-template-columns:1fr .26in 1fr .26in 1fr; align-items:center; gap:.06in; margin:.18in 0; }
+.plan .flow .step { min-height:.9in; padding:.13in; background:var(--wash); border:1px solid #cfe1e7; border-radius:9px; text-align:center; font-weight:700; color:var(--navy); display:flex; align-items:center; justify-content:center; }
+.plan .arrow { text-align:center; color:var(--teal); font-weight:700; font-size:16pt; }
+table { width:100%; border-collapse:collapse; margin:.08in 0 .12in; font-size:9.3pt; break-inside:avoid; }
+th { text-align:left; color:white; background:var(--navy); padding:.06in .07in; font-size:8.7pt; }
+td { border-bottom:1px solid var(--line); padding:.055in .07in; vertical-align:top; }
+tr:nth-child(even) td { background:#f7fafb; }
+.plan .num { text-align:right; white-space:nowrap; }
+.plan .small { font-size:8.7pt; color:var(--muted); }
+.plan .note { font-size:9pt; color:#495a66; }
+.plan .tag { display:inline-block; padding:.03in .08in; border-radius:99px; background:#e1f3f3; color:#0c5d67; font-size:8pt; font-weight:700; margin-right:.05in; }
+.plan .checklist { list-style:none; margin-left:0; padding-left:0; }
+.plan .checklist li { padding-left:.22in; position:relative; margin:.07in 0; }
+.plan .checklist li:before { content:'□'; position:absolute; left:0; color:var(--teal); font-weight:700; }
+.plan .timeline { border-left:3px solid var(--teal); padding-left:.18in; margin-left:.08in; }
+.plan .timeline h3 { margin-bottom:.03in; }
+.plan .quote { font-family:'Noto Serif','Liberation Serif',serif; font-size:13pt; line-height:1.45; color:var(--navy); padding:.19in .22in; border:1px solid #bedcdf; background:#f5fbfb; border-radius:10px; }
+.plan .source-list { font-size:8.4pt; line-height:1.35; }
+.plan .source-list li { margin:.08in 0; overflow-wrap:anywhere; }
+a { color:#0d607b; text-decoration:none; }
+.plan .compact p { margin:.03in 0 .065in; }
+.plan .compact h3 { margin:.075in 0 .025in; }
+.plan .compact table { margin:.055in 0 .075in; }
+.plan .compact td { padding:.045in .065in; }
+.plan .compact .card { padding:.09in .12in; }
+.plan .compact .callout { margin:.08in 0; padding:.11in .14in; }
+.plan .two-col { columns:2; column-gap:.28in; }
+.plan .two-col > * { break-inside:avoid; }
+.plan .status { font-weight:700; color:#0c6b63; }
+.plan .assumption { font-style:italic; color:#54616c; }
+@media (max-width: 640px) {
+  .plan .grid3, .plan .grid2, .plan .flow { grid-template-columns: 1fr; }
+  .plan .flow .arrow { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="icon.webp" alt="WWCS logo">
+      <span><span class="name">WWCS</span><br><span class="tag">Washington Weather and Climate Services</span></span></a>
+    <nav class="main" id="mainnav"></nav>
+    <span class="userbox" id="userbox"></span>
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h2>ℹ️ About Us</h2>
+    <p class="notice">Washington Weather and Climate Services (WWCS) is a free community weather service for Washington State — built and run by volunteers who believe everyone deserves clear, local, trustworthy weather information.</p>
+    <p>WWCS brings together official National Weather Service alerts, ZIP-code forecasts, radar, volunteer spotter observations, and plain-language weather education in one accessible place. The project is pursuing a Washington nonprofit structure so it can grow responsibly and unlock grant funding for weather stations and community outreach.</p>
+    <h3>Contact</h3>
+    <p><strong>Grant LeBlanc</strong><br>
+    Cell: <a href="tel:+13602175161">(360) 217-5161</a> (text friendly)<br>
+    Email: <a href="mailto:grantl2025@gmail.com">grantl2025@gmail.com</a></p>
+  </section>
+  <section class="card">
+    <h2>📋 Our Business Plan</h2>
+    <p>Below is the full WWCS business plan — the roadmap guiding how we grow from a live community website into a volunteer-led nonprofit serving Washington State.</p>
+  </section>
+  <div class="plan">
+<section class="card plan-card">
+<h2>WWCS can grow by proving local value first</h2><div class="rule"></div>
+  <p class="lead">Washington Weather and Climate Services (WWCS) already has a live public website. The next step is not a large operation; it is a disciplined, volunteer-led nonprofit that documents usefulness, protects trust, and earns the right to scale.</p>
+  <div class="grid3" style="margin:.22in 0">
+    <div class="card tint"><div class="metric">Free</div><div class="metric-label">Core public weather tools</div></div>
+    <div class="card tint"><div class="metric">500</div><div class="metric-label">People reached in year one - planning target</div></div>
+    <div class="card tint"><div class="metric">$2,500</div><div class="metric-label">Lean first-year cash budget</div></div>
+  </div>
+  <h3>The organization</h3>
+  <p><strong>Proposed legal form:</strong> Washington nonprofit corporation seeking federal 501(c)(3) public-charity recognition. Until formation and IRS approval are complete, WWCS must not represent itself as a tax-exempt charity.</p>
+  <p><strong>Mission:</strong> WWCS improves public access to understandable Washington weather and climate information, supports volunteer weather observation, and provides practical education that helps communities prepare for changing conditions.</p>
+  <p><strong>Vision:</strong> Washington residents can quickly find trusted official alerts, local context, and community observations in one accessible place.</p>
+  <h3>What WWCS does</h3>
+  <div class="grid3">
+    <div class="card"><strong>Weather access</strong><p>Statewide headlines, National Weather Service alerts, ZIP-code forecasts, and radar.</p></div>
+    <div class="card"><strong>Spotter network</strong><p>Free registration and a structured way for volunteers to share local observations.</p></div>
+    <div class="card"><strong>Public education</strong><p>Plain-language weather stories, preparedness content, and community discussion.</p></div>
+  </div>
+  <h3>Why this model can work</h3>
+  <ul>
+    <li><strong>The service is already tangible:</strong> the public site is live, installable as a progressive web app, and has a working Spotter Center.</li>
+    <li><strong>The initial cost is low:</strong> the project can remain remote-first, volunteer-led, and equipment-light while demand is tested.</li>
+    <li><strong>Microgrants fit the stage:</strong> small grants can fund formation, one station, a refurbished laptop, outreach, and basic risk controls.</li>
+    <li><strong>Scale depends on evidence:</strong> volunteer activity, observations, repeat visitors, partnerships, and user feedback will drive the next funding case.</li>
+  </ul>
+  <div class="callout"><strong>Current footing:</strong> WWCS is live at <a href="https://wwcs.onrender.com/">wwcs.onrender.com</a>. The founder reported an initial traffic count of 34 on September 25, 2026. A $500 Pollination Project application was submitted on September 24, 2026; no award is assumed in this plan.</div>
+</section>
+<section class="card plan-card">
+<h2>Local observations add context to official forecasts</h2><div class="rule"></div>
+  <p class="lead">Washington's terrain and microclimates can produce sharply different conditions over short distances. WWCS can make official information easier to use while giving residents a responsible channel for local, time-stamped observations.</p>
+  <h3>The problem WWCS addresses</h3>
+  <ul>
+    <li><strong>Information is fragmented:</strong> residents move between alert pages, radar, forecasts, neighborhood groups, and social posts.</li>
+    <li><strong>Neighborhood detail is uneven:</strong> official stations cannot describe every hill, valley, shoreline, road, or community at the same moment.</li>
+    <li><strong>Community reports lack structure:</strong> useful observations are often missing the time, place, and condition details needed for interpretation.</li>
+    <li><strong>Preparedness language can be technical:</strong> plain explanations help residents understand an alert and find authoritative instructions.</li>
+  </ul>
+  <h3>WWCS's distinct role</h3>
+  <div class="flow">
+    <div class="step">Official alerts and forecasts</div><div class="arrow">+</div>
+    <div class="step">Structured local observations</div><div class="arrow">=</div>
+    <div class="step">Useful community context</div>
+  </div>
+  <p>WWCS should act as an access, education, and participation layer. It should link people to authoritative sources, show clearly labeled community reports, and explain that observations are not official warnings.</p>
+  <h3>Primary beneficiaries</h3>
+  <ul>
+    <li><strong>Washington residents:</strong> people checking weather, road-adjacent conditions, smoke, heat, wind, snow, rain, or storm impacts.</li>
+    <li><strong>Volunteer observers:</strong> residents who want a simple, constructive way to contribute local weather information.</li>
+    <li><strong>Community groups:</strong> neighborhood associations, libraries, schools, and preparedness groups that can use or share plain-language resources.</li>
+    <li><strong>Underserved locations:</strong> communities with fewer nearby observations or less access to local weather reporting.</li>
+  </ul>
+  <h3>Public-benefit commitments</h3>
+  <div class="grid2">
+    <div><span class="tag">Free access</span><p>Core forecasts, alerts, observations, and educational content remain available without membership fees.</p></div>
+    <div><span class="tag">Source clarity</span><p>Official agency information and community observations are visibly distinguished.</p></div>
+    <div><span class="tag">Privacy</span><p>Collect only data needed to operate the spotter program; avoid publishing precise home addresses.</p></div>
+    <div><span class="tag">Accessibility</span><p>Use mobile-friendly pages, plain language, strong contrast, and low-bandwidth design.</p></div>
+  </div>
+  <div class="callout warning"><strong>Safety boundary:</strong> WWCS supplements - and never replaces - National Weather Service warnings, local emergency management, 911, or instructions from public authorities.</div>
+</section>
+<section class="card plan-card">
+<h2>Three programs keep the mission focused</h2><div class="rule"></div>
+  <div class="card tint">
+    <h3>1. Free Washington Weather Desk</h3>
+    <p><strong>Purpose:</strong> make key weather resources easier for the public to find and understand.</p>
+    <p><strong>Activities:</strong> display Washington weather headlines, active official alerts, ZIP-code forecasts, radar, and explanatory articles; maintain mobile and installable access.</p>
+    <p><strong>Year-one outputs:</strong> reliable public pages; source labels; monthly content review; uptime and usage tracking.</p>
+  </div>
+  <div class="card tint" style="margin-top:.15in">
+    <h3>2. Community Weather Spotter Network</h3>
+    <p><strong>Purpose:</strong> gather useful local observations while building community participation in weather awareness.</p>
+    <p><strong>Activities:</strong> recruit volunteers, provide a reporting guide, collect time-and-place-based observations, moderate submissions, and display accepted reports.</p>
+    <p><strong>Year-one outputs:</strong> 30 registered volunteers, 20 active spotters, 300 accepted observations, and representation from at least five Washington counties.</p>
+  </div>
+  <div class="card tint" style="margin-top:.15in">
+    <h3>3. Weather Education and Preparedness</h3>
+    <p><strong>Purpose:</strong> help residents understand changing conditions and take appropriate next steps.</p>
+    <p><strong>Activities:</strong> publish plain-language explainers, share links to official training and preparedness resources, and conduct small online or community outreach sessions.</p>
+    <p><strong>Year-one outputs:</strong> 12 educational posts, two outreach events or partner presentations, and a reusable spotter orientation.</p>
+  </div>
+  <h3>Service journey</h3>
+  <div class="flow">
+    <div class="step">Resident finds WWCS</div><div class="arrow">→</div>
+    <div class="step">Uses free information or joins</div><div class="arrow">→</div>
+    <div class="step">Returns, reports, or shares</div>
+  </div>
+  <h3>Quality controls</h3>
+  <ul>
+    <li><strong>Label the source:</strong> show whether information came from an official feed, WWCS editorial content, or a community observer.</li>
+    <li><strong>Moderate before amplification:</strong> remove unsafe, abusive, promotional, or personally identifying submissions.</li>
+    <li><strong>Correct visibly:</strong> maintain a simple correction process and update inaccurate content quickly.</li>
+    <li><strong>Train for consistency:</strong> use a standard field-report format covering location area, time, condition, units, and optional photo evidence.</li>
+  </ul>
+</section>
+<section class="card plan-card">
+<h2>A small independent board makes WWCS credible</h2><div class="rule"></div>
+  <p class="lead">WWCS should begin with simple controls that funders can understand: independent oversight, a separate bank account, written approvals, and records that connect every dollar to the mission.</p>
+  <h3>Proposed leadership structure</h3>
+  <table>
+    <thead><tr><th>Role</th><th>Initial responsibility</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Founder / executive lead</td><td>Program direction, site operations, partnerships</td><td>Grant Leblanc; unpaid initially</td></tr>
+      <tr><td>Board chair</td><td>Governance, agendas, executive oversight</td><td>Recruit</td></tr>
+      <tr><td>Treasurer</td><td>Budget, bank review, grant records, filings</td><td>Recruit</td></tr>
+      <tr><td>Secretary</td><td>Minutes, resolutions, records calendar</td><td>Recruit</td></tr>
+      <tr><td>Volunteer coordinator</td><td>Spotter onboarding, conduct, participation</td><td>Founder or volunteer</td></tr>
+    </tbody>
+  </table>
+  <p class="note"><strong>Governance target:</strong> recruit at least three directors, preferably unrelated and bringing weather, community, finance, legal, or technical experience. Confirm legal requirements before filing.</p>
+  <h3>Core policies for the first board meeting</h3>
+  <div class="grid2">
+    <div class="card"><strong>Bylaws</strong><p>Board powers, terms, meetings, voting, officers, committees, and dissolution.</p></div>
+    <div class="card"><strong>Conflict policy</strong><p>Disclosure, recusal, documentation, and annual acknowledgments.</p></div>
+    <div class="card"><strong>Financial controls</strong><p>Separate account, two-person review above a set threshold, receipts, and monthly reconciliation.</p></div>
+    <div class="card"><strong>Data and moderation</strong><p>Privacy, retention, acceptable use, corrections, incident response, and volunteer conduct.</p></div>
+  </div>
+  <h3>Low-cost operating model</h3>
+  <ul>
+    <li><strong>Remote-first:</strong> no office lease during year one; use online meetings and free public meeting space when appropriate.</li>
+    <li><strong>Volunteer-first:</strong> no salary is budgeted until stable funding and board approval exist.</li>
+    <li><strong>Separate records:</strong> nonprofit money, accounts, equipment, and contracts stay separate from personal activity.</li>
+    <li><strong>Free public service:</strong> sponsorships and grants must not control forecasts, alerts, observation acceptance, or safety messaging.</li>
+  </ul>
+  <h3>Major risks and responses</h3>
+  <table>
+    <thead><tr><th>Risk</th><th>Response</th></tr></thead>
+    <tbody>
+      <tr><td>Inaccurate community report</td><td>Required fields, moderation, visible labels, correction process</td></tr>
+      <tr><td>User mistakes WWCS for an authority</td><td>Prominent NWS and emergency-service disclaimer</td></tr>
+      <tr><td>Founder dependence</td><td>Document systems; share admin access through approved controls</td></tr>
+      <tr><td>Privacy or account incident</td><td>Minimal collection, access review, backups, incident log</td></tr>
+      <tr><td>Grant concentration</td><td>Multiple small funders, local sponsors, individual donations</td></tr>
+    </tbody>
+  </table>
+</section>
+<section class="card plan-card">
+<h2>Year one turns activity into evidence</h2><div class="rule"></div>
+  <div class="timeline">
+    <h3>Quarter 1 - Form and protect</h3>
+    <p>Confirm name availability; recruit the initial board; choose a Washington registered agent; file articles with 501(c)(3)-compatible purpose and dissolution language; adopt bylaws and conflict policy; obtain an Employer Identification Number; open a nonprofit bank account; review insurance and state charity-registration obligations.</p>
+    <p><strong>Evidence:</strong> approved formation documents, meeting minutes, compliance calendar, separate account, baseline analytics.</p>
+    <h3>Quarter 2 - Equip and standardize</h3>
+    <p>Install the first station if funded; establish a documented observation format; publish spotter orientation; add privacy and correction procedures; recruit through community groups, libraries, schools, and weather networks.</p>
+    <p><strong>Targets:</strong> 10 active spotters, 75 accepted observations, three counties represented.</p>
+    <h3>Quarter 3 - Partner and teach</h3>
+    <p>Hold or join two outreach sessions; pursue one school, library, emergency-preparedness, or community-science partnership; publish monthly weather education; test a short user-feedback survey.</p>
+    <p><strong>Targets:</strong> 20 active spotters, 200 cumulative observations, one working partnership.</p>
+    <h3>Quarter 4 - Evaluate and renew</h3>
+    <p>Publish a one-page impact report; review participation, quality, and reach; file required state and federal reports; set the second-year budget; apply for larger local and regional grants using documented results.</p>
+    <p><strong>Targets:</strong> 30 registered volunteers, 20 active spotters, 300 accepted observations, five counties, 500 people reached.</p>
+  </div>
+  <h3>Scorecard</h3>
+  <table>
+    <thead><tr><th>Measure</th><th>Baseline</th><th class="num">12-month target</th><th>How measured</th></tr></thead>
+    <tbody>
+      <tr><td>People reached</td><td>Not yet standardized</td><td class="num">500</td><td>Unique visitors + event attendance</td></tr>
+      <tr><td>Registered volunteers</td><td>To establish</td><td class="num">30</td><td>Spotter accounts</td></tr>
+      <tr><td>Active spotters</td><td>To establish</td><td class="num">20</td><td>At least one accepted report</td></tr>
+      <tr><td>Accepted observations</td><td>To establish</td><td class="num">300</td><td>Moderated database count</td></tr>
+      <tr><td>County coverage</td><td>To establish</td><td class="num">5</td><td>County-level count</td></tr>
+      <tr><td>Education pieces</td><td>Blog is live</td><td class="num">12</td><td>Published posts</td></tr>
+      <tr><td>Community partners</td><td>0 documented</td><td class="num">2</td><td>Written collaboration record</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><strong>Measurement rule:</strong> separate reach from engagement. A page view shows exposure; a return visit, accepted observation, completed orientation, survey response, or partner activity shows deeper value.</div>
+</section>
+<section class="card plan-card">
+<h2>A $2,500 launch budget keeps the model realistic</h2><div class="rule"></div>
+  <p class="lead">This is a planning budget, not a promise of spending. Costs should be approved by the board, supported by receipts, and adjusted to actual grant restrictions.</p>
+  <table>
+    <thead><tr><th>First-year use</th><th>Purpose</th><th class="num">Budget</th></tr></thead>
+    <tbody>
+      <tr><td>Washington incorporation</td><td>Online filing allowance; verify current fee</td><td class="num">$50</td></tr>
+      <tr><td>IRS exemption filing</td><td>Form 1023-EZ, only if eligible</td><td class="num">$275</td></tr>
+      <tr><td>Insurance reserve</td><td>General / volunteer / cyber coverage review</td><td class="num">$500</td></tr>
+      <tr><td>Weather station</td><td>All-in-one local observation station</td><td class="num">$330</td></tr>
+      <tr><td>Mounting hardware</td><td>Pole and installation supplies</td><td class="num">$70</td></tr>
+      <tr><td>Refurbished laptop</td><td>Site, data, and volunteer administration</td><td class="num">$100</td></tr>
+      <tr><td>Domain, email, software</td><td>Basic annual digital operations</td><td class="num">$240</td></tr>
+      <tr><td>Outreach and training</td><td>Printing, field kits, event materials</td><td class="num">$400</td></tr>
+      <tr><td>Local travel</td><td>Partner meetings and equipment work</td><td class="num">$300</td></tr>
+      <tr><td>Contingency</td><td>Unexpected mission-related costs</td><td class="num">$235</td></tr>
+      <tr><td><strong>Total</strong></td><td></td><td class="num"><strong>$2,500</strong></td></tr>
+    </tbody>
+  </table>
+  <h3>Funding stack</h3>
+  <div class="grid2">
+    <div class="card tint"><strong>Microgrants</strong><p>Seek $500-$2,500 awards for specific, visible pilots with short timelines and clear outputs.</p></div>
+    <div class="card tint"><strong>Individual gifts</strong><p>Add small recurring gifts after legal and state solicitation requirements are confirmed.</p></div>
+    <div class="card tint"><strong>Local sponsorships</strong><p>Request equipment or event support with written terms and no editorial influence.</p></div>
+    <div class="card tint"><strong>In-kind support</strong><p>Use donated equipment, meeting space, technical help, and volunteer hours where useful.</p></div>
+  </div>
+  <h3>Current funding position</h3>
+  <table>
+    <thead><tr><th>Opportunity</th><th>Amount</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>The Pollination Project</td><td>$500</td><td class="status">Submitted Sep. 24, 2026</td></tr>
+      <tr><td>Awesome Foundation</td><td>$1,000</td><td>Recommended next; confirm active chapter fit</td></tr>
+      <tr><td>Local community / climate grants</td><td>Varies</td><td>Screen for geography and nonprofit eligibility</td></tr>
+      <tr><td>Equipment sponsorships</td><td>In kind</td><td>Target local hardware, technology, and weather firms</td></tr>
+    </tbody>
+  </table>
+  <p class="small">The Pollination Project request covers the weather station ($330), refurbished laptop ($100), and mounting hardware ($70). If funded, later grants must pay for different items or documented expansion - never the same cost twice.</p>
+</section>
+<section class="card plan-card">
+<h2>The strongest ask is specific, local, and measurable</h2><div class="rule"></div>
+  <h3>50-word organization summary</h3>
+  <div class="quote">Washington Weather and Climate Services is building a free, community-powered weather information network for Washington State. WWCS combines official alerts and forecasts with structured volunteer observations and plain-language education so residents can understand local conditions, prepare responsibly, and contribute useful neighborhood-level weather reports.</div>
+  <h3>Problem statement</h3>
+  <p>Washington residents often rely on scattered sources for forecasts, alerts, radar, and neighborhood reports. Official data is essential, but it cannot describe every local condition at the same moment. WWCS brings authoritative information and clearly labeled community observations into one accessible service while teaching volunteers how to report conditions consistently and safely.</p>
+  <h3>Proposed $1,000 project: Community Weather Starter Kit</h3>
+  <p>WWCS will establish one reliable observation site, equip its volunteer administration, publish a standardized spotter guide, and recruit residents in multiple Washington counties. Within six months, the project will support at least 10 active spotters, 75 accepted observations, and one community outreach session.</p>
+  <table>
+    <thead><tr><th>Use</th><th class="num">If Pollination is not awarded</th><th class="num">If Pollination is awarded</th></tr></thead>
+    <tbody>
+      <tr><td>Observation equipment</td><td class="num">$400</td><td class="num">$350</td></tr>
+      <tr><td>Laptop / field kits</td><td class="num">$170</td><td class="num">$200</td></tr>
+      <tr><td>Outreach / training</td><td class="num">$250</td><td class="num">$250</td></tr>
+      <tr><td>Software / insurance reserve</td><td class="num">$130</td><td class="num">$150</td></tr>
+      <tr><td>Local travel / contingency</td><td class="num">$50</td><td class="num">$50</td></tr>
+      <tr><td><strong>Total</strong></td><td class="num"><strong>$1,000</strong></td><td class="num"><strong>$1,000</strong></td></tr>
+    </tbody>
+  </table>
+  <h3>Founder and sustainability language</h3>
+  <p><strong>Founder:</strong> Grant Leblanc created WWCS and leads its early site operations, outreach, and volunteer recruitment. The proposed nonprofit will add independent board oversight and documented financial controls.</p>
+  <p><strong>Sustainability:</strong> After the pilot, recurring costs will be covered through a mix of small donations, local sponsorships, in-kind support, and follow-on grants. The service will remain lean and remote-first, with spending tied to demonstrated participation.</p>
+  <h3>Attachments to prepare once</h3>
+  <ul class="checklist">
+    <li>One-page budget and current bank statement after the nonprofit account opens</li>
+    <li>Board list and short biographies</li>
+    <li>Articles, bylaws, conflict policy, EIN letter, and IRS status letter when available</li>
+    <li>Site screenshots, logo, baseline traffic, spotter count, and two short user testimonials</li>
+    <li>Equipment quote and a one-page measurement plan</li>
+  </ul>
+</section>
+<section class="card plan-card">
+<h2>Incorporation is the first filing, not the finish line</h2><div class="rule"></div>
+  <div class="grid2">
+    <div>
+      <h3>Before filing</h3>
+      <ul class="checklist">
+        <li>Check that the WWCS legal name is available.</li>
+        <li>Recruit and confirm the initial directors.</li>
+        <li>Choose a Washington registered agent and physical address; understand the public-record impact.</li>
+        <li>Choose a December 31 fiscal year-end unless the board has a reason to do otherwise.</li>
+        <li>Have the purpose and dissolution clauses reviewed for 501(c)(3) compatibility.</li>
+      </ul>
+      <h3>Proposed purpose clause</h3>
+      <p class="small">This corporation is organized exclusively for charitable, educational, and scientific purposes within the meaning of section 501(c)(3) of the Internal Revenue Code, including improving public access to weather and climate information, supporting community weather observation, and providing public education and preparedness resources.</p>
+      <h3>Proposed dissolution direction</h3>
+      <p class="small">After payment of liabilities, remaining assets will be distributed for one or more exempt purposes within section 501(c)(3), or to a federal, state, or local government for a public purpose. Final wording should be checked against current IRS and Washington requirements.</p>
+    </div>
+    <div>
+      <h3>After state approval</h3>
+      <ol>
+        <li>Obtain an EIN directly from the IRS; it is required even with no employees.</li>
+        <li>Hold the organizational board meeting; adopt bylaws, policies, officers, budget, and banking resolution.</li>
+        <li>Open an account in the nonprofit's exact legal name.</li>
+        <li>Complete the Form 1023-EZ eligibility worksheet. If eligible, file electronically; current published user fee is $275. Otherwise use Form 1023; current fee is $600.</li>
+        <li>Determine whether Washington charity registration is required before soliciting broadly.</li>
+        <li>Review Department of Revenue registration based on activities and revenue.</li>
+        <li>Calendar the Washington annual report and federal Form 990-series filing.</li>
+      </ol>
+      <div class="callout warning"><strong>Important:</strong> Washington incorporation does not automatically create federal tax-exempt status or a blanket Washington tax exemption. Do not promise donors a tax deduction until the organization has a valid basis to do so.</div>
+    </div>
+  </div>
+  <h3>Decisions Grant still needs to make</h3>
+  <table>
+    <thead><tr><th>Decision</th><th>Working recommendation</th></tr></thead>
+    <tbody>
+      <tr><td>Legal name</td><td>Washington Weather and Climate Services</td></tr>
+      <tr><td>Board members</td><td>At least three independent directors</td></tr>
+      <tr><td>Registered agent</td><td>Trusted Washington resident or service; protect home privacy</td></tr>
+      <tr><td>Membership</td><td>No voting members; board-governed structure</td></tr>
+      <tr><td>Fiscal year</td><td>Calendar year ending December 31</td></tr>
+      <tr><td>Initial filing route</td><td>Online, after live fee verification</td></tr>
+    </tbody>
+  </table>
+  <p class="small assumption">Planning note: The $50 state filing amount reflects the working assumption discussed with Grant. Fees and form requirements can change, so the live Washington Secretary of State fee schedule must be checked immediately before payment.</p>
+</section>
+<section class="card plan-card">
+<h2>This plan is ready for grant adaptation</h2><div class="rule"></div>
+  <p class="lead">Use this document as the master narrative. Before each application, tailor the project title, amount, geography, timeline, and budget to the funder's rules. Never submit the same expense to two funders.</p>
+  <h3>Immediate next actions</h3>
+  <ol>
+    <li><strong>Recruit the board:</strong> secure commitments from at least two additional people with complementary skills.</li>
+    <li><strong>Confirm filing facts:</strong> check the WWCS name, current state fee, registered agent details, and public-address implications.</li>
+    <li><strong>Prepare formation documents:</strong> articles, bylaws, conflict policy, initial resolutions, and a compliance calendar.</li>
+    <li><strong>Submit the next microgrant:</strong> adapt the $1,000 starter-kit narrative for the most appropriate active Awesome Foundation chapter.</li>
+    <li><strong>Build the evidence file:</strong> record monthly visitors, registrations, active spotters, accepted reports, counties, feedback, partners, and expenses.</li>
+  </ol>
+  <h3>Sources</h3>
+  <ol class="source-list">
+    <li><strong>WWCS public website.</strong> Current services and public positioning. <a href="https://wwcs.onrender.com/">https://wwcs.onrender.com/</a></li>
+    <li><strong>Washington Secretary of State.</strong> Online filing instructions and nonprofit filing route. <a href="http://www.sos.wa.gov/corporations-charities/business-entities/online-filing-instructions">http://www.sos.wa.gov/corporations-charities/business-entities/online-filing-instructions</a></li>
+    <li><strong>Washington Secretary of State.</strong> Fee schedules and priority services; verify immediately before filing. <a href="http://www.sos.wa.gov/corporations-charities/frequently-asked-questions-faqs/fee-schedules-priority-services">http://www.sos.wa.gov/corporations-charities/frequently-asked-questions-faqs/fee-schedules-priority-services</a></li>
+    <li><strong>Washington Secretary of State / Nonprofit Association of Washington.</strong> Starting a Nonprofit in Washington State guide, updated June 2023. <a href="https://www.sos.wa.gov/sites/default/files/2023-07/Starting_a_Nonprofit_in_WA_Guide_2023.pdf?uid=652818c10b16f&amp;amp">https://www.sos.wa.gov/sites/default/files/2023-07/Starting_a_Nonprofit_in_WA_Guide_2023.pdf?uid=652818c10b16f&amp;</a></li>
+    <li><strong>Internal Revenue Service.</strong> Form 1023 and Form 1023-EZ user fees. <a href="https://www.irs.gov/charities-non-profits/form-1023-and-1023-ez-amount-of-user-fee">https://www.irs.gov/charities-non-profits/form-1023-and-1023-ez-amount-of-user-fee</a></li>
+    <li><strong>Internal Revenue Service.</strong> Form 1023-EZ eligibility, EIN, filing, and annual reporting instructions. <a href="https://www.irs.gov/instructions/i1023ez">https://www.irs.gov/instructions/i1023ez</a></li>
+    <li><strong>Washington Department of Revenue.</strong> State tax and registration treatment of nonprofits. <a href="https://dor.wa.gov/education/industry-guides/nonprofit-organizations">https://dor.wa.gov/education/industry-guides/nonprofit-organizations</a></li>
+    <li><strong>The Awesome Foundation.</strong> $1,000 chapter-based grants; chapter fit and availability must be confirmed at submission. <a href="https://www.awesomefoundation.org/">https://www.awesomefoundation.org/</a></li>
+  </ol>
+  <h3>Assumptions and limits</h3>
+  <ul>
+    <li>WWCS has not yet incorporated or received IRS recognition.</li>
+    <li>Grant Leblanc is the founder and initial executive lead; director names, addresses, and officer assignments are not yet confirmed.</li>
+    <li>Targets and budgets are planning figures. They are designed to be credible at WWCS's current stage, not presented as historical results.</li>
+    <li>This business plan is not legal, tax, insurance, or accounting advice. Current forms, fees, and requirements should be verified with the responsible agency or a qualified adviser before filing.</li>
+  </ul>
+</section>
+  </div>
+</main>
+<footer>WWCS · Community weather for Washington State</footer>
+<script src="auth.js"></script>
+<script>
+  renderHeader('about.html');
+</script>
+</body>
+</html>
