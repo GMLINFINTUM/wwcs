@@ -50,3 +50,12 @@ CREATE INDEX IF NOT EXISTS idx_observations_created ON observations(created_at D
 CREATE INDEX IF NOT EXISTS idx_blog_created        ON blog_posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_chat_created        ON chat_messages(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_sessions_expires    ON sessions(expires_at);
+
+-- Privacy-friendly page view counter: hits per page per day. No IPs or
+-- personal data are stored here.
+CREATE TABLE IF NOT EXISTS page_views (
+  path TEXT NOT NULL,
+  day  DATE NOT NULL,
+  hits INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (path, day)
+);

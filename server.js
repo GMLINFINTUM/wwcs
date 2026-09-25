@@ -36,6 +36,21 @@ app.use((req, res, next) => {
   if (req.path.endsWith('.webmanifest')) res.type('application/manifest+json');
   next();
 });
+
+// ---- Page view counter (privacy-friendly: per-page, per-day hit counts; no IPs stored) ----
+// Runs before the static handler and is fire-and-forget, so a DB hiccup never
+// slows down or breaks page loads.
+app.use((req, res, next) => {
+  if (pool && req.method === 'GET' && (req.path === '/' || req.path.endsWith('.html'))) {
+    const page = req.path === '/' ? '/index.html' : req.path;
+    pool.query(
+      `INSERT INTO page_views (path, day, hits) VALUES ($1, CURRENT_DATE, 1)
+       ON CONFLICT (path, day) DO UPDATE SET hits = page_views.hits + 1`,
+      [page]
+    ).catch((err) => console.error('page view count failed:', err.message));
+  }
+  next();
+});
 app.use(express.static('public', { extensions: ['html'] }));
 
 function parseCookies(req) {
@@ -313,6 +328,30 @@ app.get('/api/alerts', async (req, res) => {
     res.json({ alerts: (data.features || []).map((f) => f.properties) });
   } catch (err) {
     res.status(502).json({ error: 'Could not reach the National Weather Service.' });
+  }
+});
+
+// ---- Site traffic stats (logged-in spotters only) ----
+app.get('/api/stats', requireAuth, async (req, res) => {
+  if (needDb(res)) return;
+  try {
+    const total = await pool.query('SELECT COALESCE(SUM(hits), 0) AS total FROM page_views');
+    const byPage = await pool.query(
+      'SELECT path, SUM(hits) AS hits FROM page_views GROUP BY path ORDER BY hits DESC'
+    );
+    const byDay = await pool.query(
+      `SELECT day, SUM(hits) AS hits FROM page_views
+       WHERE day > CURRENT_DATE - INTERVAL '30 days'
+       GROUP BY day ORDER BY day`
+    );
+    res.json({
+      total: Number(total.rows[0].total),
+      byPage: byPage.rows.map((r) => ({ path: r.path, hits: Number(r.hits) })),
+      byDay: byDay.rows.map((r) => ({ day: r.day.toISOString().slice(0, 10), hits: Number(r.hits) })),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not load stats.' });
   }
 });
 
