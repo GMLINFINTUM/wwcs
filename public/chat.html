@@ -13,6 +13,9 @@
 <script src="/pwa.js" defer></script>
 <title>Live Chat — WWCS</title>
 <link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,22 +28,31 @@
   </div>
 </header>
 <main>
+  <header class="page-intro">
+    <span class="eyebrow">Community</span>
+    <h1>Live Chat</h1>
+    <p>Talk weather with the community — what's the sky doing where you are?</p>
+  </header>
   <section class="card">
-    <h2>💬 Live Chat</h2>
-    <p class="radar-legend">Be kind. Chat is AI-moderated: profanity, slurs, spam, and flooding are blocked automatically.
+    <p class="hint">Be kind. Chat is AI-moderated: profanity, slurs, spam, and flooding are blocked automatically.
       Signed-in spotters post under their name; guests post as “Guest”.</p>
     <div class="error" id="chaterr" style="display:none"></div>
     <div id="chatlog" aria-live="polite"></div>
-    <form id="chatform" class="form-row" style="align-items:flex-end">
-      <div style="flex:1 1 300px">
+    <form id="chatform" class="form-row">
+      <div class="chat-input-wrap">
         <label for="chatinput">Message (max 500 characters)</label>
         <input id="chatinput" maxlength="500" placeholder="What's the sky doing where you are?" autocomplete="off">
       </div>
-      <div style="flex:0 0 auto"><button class="btn" type="submit">Send</button></div>
+      <div class="chat-send-wrap"><button class="btn" type="submit">Send</button></div>
     </form>
   </section>
 </main>
-<footer>WWCS · Community weather for Washington State</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
 <script src="auth.js"></script>
 <script>
 renderHeader('chat.html');

@@ -13,6 +13,9 @@
 <script src="/pwa.js" defer></script>
 <title>Weather Blog — WWCS</title>
 <link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,16 +28,28 @@
   </div>
 </header>
 <main>
+  <header class="page-intro">
+    <span class="eyebrow">Stories & analysis</span>
+    <h1>Weather Blog</h1>
+    <p>Storm stories, forecast explainers, and preparedness notes from the WWCS community.</p>
+  </header>
+  <div class="stack">
   <section class="card" id="write">
     <h2>✍️ Publish a Post</h2>
     <div id="formwrap"><p class="notice">Checking sign-in…</p></div>
   </section>
-  <section class="card" style="margin-top:1rem">
+  <section class="card">
     <h2>📰 Weather Blog</h2>
     <div id="posts"><p class="notice">Loading posts…</p></div>
   </section>
+  </div>
 </main>
-<footer>WWCS · Community weather for Washington State</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
 <script src="auth.js"></script>
 <script>
 (async function () {

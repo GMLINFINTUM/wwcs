@@ -13,77 +13,10 @@
 <script src="/pwa.js" defer></script>
 <title>About Us — WWCS</title>
 <link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
-<style>
-.plan-card { margin-bottom: 1.25rem; }
-.plan-card h2 { font-size: 1.35rem; }
-.plan { --wash: #f2f7f9; }
-.plan .metric-label { font-size: .85rem; color: var(--muted); }
-.plan .card.tint { background: var(--light); }
-.plan .card { box-shadow: none; border: 1px solid #d8e8ee; }
-* { box-sizing: border-box; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-html, body { margin:0; padding:0; background:#e7edf1; color:var(--ink); font-family:'Liberation Sans','Noto Sans',sans-serif; }
-.plan .cover { color:white; background:linear-gradient(155deg,#071c33 0%,#0b3457 56%,#0e6b75 100%); padding:.66in .72in; }
-.plan .logo { width:1.05in; height:1.05in; object-fit:contain; border-radius:18px; border:1px solid rgba(255,255,255,.28); }
-.plan .kicker { margin-top:.62in; color:#a9edf0; text-transform:uppercase; letter-spacing:.16em; font-size:8.3pt; font-weight:700; }
-h1 { font-family:'Noto Serif','Liberation Serif',serif; font-size:31pt; line-height:1.03; letter-spacing:-.02em; margin:.15in 0 .15in; }
-.plan .cover .sub { font-size:15pt; line-height:1.35; color:#e4f5f6; max-width:5.8in; }
-.plan .cover-summary { margin-top:.55in; width:5.8in; padding:.22in .25in; border-left:4px solid #5be0dc; background:rgba(255,255,255,.09); font-size:10.8pt; line-height:1.5; }
-.plan .meta { position:absolute; left:.72in; bottom:.7in; color:#cae5e7; font-size:9pt; }
-.plan .header { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:.12in; margin-bottom:.18in; color:var(--muted); font-size:8.3pt; }
-.plan .header strong { color:var(--navy); letter-spacing:.05em; }
-.plan .footer { position:absolute; left:.68in; right:.68in; bottom:.20in; display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:.08in; color:#76838d; font-size:8pt; }
-h2 { font-family:'Noto Serif','Liberation Serif',serif; color:var(--navy); font-size:20pt; line-height:1.12; margin:0 0 .16in; letter-spacing:-.01em; }
-h3 { color:var(--blue); font-size:11.5pt; margin:.12in 0 .05in; }
-p { margin:.045in 0 .085in; }
-ul, ol { margin:.05in 0 .10in .19in; padding-left:.1in; }
-li { margin:.025in 0; }
-.plan .lead { font-size:12pt; line-height:1.48; color:#314453; }
-.plan .rule { height:3px; width:.68in; background:var(--teal); margin:0 0 .22in; }
-.plan .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.18in; }
-.plan .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:.13in; }
-.plan .card { border:1px solid var(--line); border-radius:10px; padding:.12in .14in; background:white; break-inside:avoid; }
-.plan .card.tint { background:var(--wash); border-color:#d7e8ec; }
-.plan .card h3 { margin-top:0; }
-.plan .metric { color:var(--navy); font-size:22pt; font-weight:700; line-height:1; }
-.plan .metric-label { color:var(--muted); font-size:8.5pt; margin-top:.05in; }
-.plan .callout { margin:.17in 0; padding:.15in .18in; background:var(--sky); border-left:4px solid var(--teal); }
-.plan .warning { background:#fff7df; border-left-color:var(--gold); }
-.plan .flow { display:grid; grid-template-columns:1fr .26in 1fr .26in 1fr; align-items:center; gap:.06in; margin:.18in 0; }
-.plan .flow .step { min-height:.9in; padding:.13in; background:var(--wash); border:1px solid #cfe1e7; border-radius:9px; text-align:center; font-weight:700; color:var(--navy); display:flex; align-items:center; justify-content:center; }
-.plan .arrow { text-align:center; color:var(--teal); font-weight:700; font-size:16pt; }
-table { width:100%; border-collapse:collapse; margin:.08in 0 .12in; font-size:9.3pt; break-inside:avoid; }
-th { text-align:left; color:white; background:var(--navy); padding:.06in .07in; font-size:8.7pt; }
-td { border-bottom:1px solid var(--line); padding:.055in .07in; vertical-align:top; }
-tr:nth-child(even) td { background:#f7fafb; }
-.plan .num { text-align:right; white-space:nowrap; }
-.plan .small { font-size:8.7pt; color:var(--muted); }
-.plan .note { font-size:9pt; color:#495a66; }
-.plan .tag { display:inline-block; padding:.03in .08in; border-radius:99px; background:#e1f3f3; color:#0c5d67; font-size:8pt; font-weight:700; margin-right:.05in; }
-.plan .checklist { list-style:none; margin-left:0; padding-left:0; }
-.plan .checklist li { padding-left:.22in; position:relative; margin:.07in 0; }
-.plan .checklist li:before { content:'□'; position:absolute; left:0; color:var(--teal); font-weight:700; }
-.plan .timeline { border-left:3px solid var(--teal); padding-left:.18in; margin-left:.08in; }
-.plan .timeline h3 { margin-bottom:.03in; }
-.plan .quote { font-family:'Noto Serif','Liberation Serif',serif; font-size:13pt; line-height:1.45; color:var(--navy); padding:.19in .22in; border:1px solid #bedcdf; background:#f5fbfb; border-radius:10px; }
-.plan .source-list { font-size:8.4pt; line-height:1.35; }
-.plan .source-list li { margin:.08in 0; overflow-wrap:anywhere; }
-a { color:#0d607b; text-decoration:none; }
-.plan .compact p { margin:.03in 0 .065in; }
-.plan .compact h3 { margin:.075in 0 .025in; }
-.plan .compact table { margin:.055in 0 .075in; }
-.plan .compact td { padding:.045in .065in; }
-.plan .compact .card { padding:.09in .12in; }
-.plan .compact .callout { margin:.08in 0; padding:.11in .14in; }
-.plan .two-col { columns:2; column-gap:.28in; }
-.plan .two-col > * { break-inside:avoid; }
-.plan .status { font-weight:700; color:#0c6b63; }
-.plan .assumption { font-style:italic; color:#54616c; }
-@media (max-width: 640px) {
-  .plan .grid3, .plan .grid2, .plan .flow { grid-template-columns: 1fr; }
-  .plan .flow .arrow { display: none; }
-}
-</style>
 </head>
 <body>
 <header class="site">
@@ -95,6 +28,12 @@ a { color:#0d607b; text-decoration:none; }
   </div>
 </header>
 <main>
+  <header class="page-intro">
+    <span class="eyebrow">About WWCS</span>
+    <h1>Washington Weather and Climate Services</h1>
+    <p>A free community weather service for Washington State — built and run by volunteers.</p>
+  </header>
+  <div class="stack">
   <section class="card">
     <h2>ℹ️ About Us</h2>
     <p class="notice">Washington Weather and Climate Services (WWCS) is a free community weather service for Washington State — built and run by volunteers who believe everyone deserves clear, local, trustworthy weather information.</p>
@@ -420,8 +359,14 @@ a { color:#0d607b; text-decoration:none; }
   </ul>
 </section>
   </div>
+  </div>
 </main>
-<footer>WWCS · Community weather for Washington State</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
 <script src="auth.js"></script>
 <script>
   renderHeader('about.html');

@@ -13,6 +13,9 @@
 <script src="/pwa.js" defer></script>
 <title>Spotter Center — WWCS</title>
 <link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,21 +28,31 @@
   </div>
 </header>
 <main>
+  <header class="page-intro">
+    <span class="eyebrow">Volunteer network</span>
+    <h1>Spotter Center</h1>
+  </header>
+  <div class="stack">
   <section class="card">
-    <h2>👥 Spotter Center</h2>
     <p id="welcome">Our volunteer spotters report real conditions from every corner of Washington.</p>
-    <div id="actions" style="margin:.75rem 0"></div>
+    <div id="actions"></div>
   </section>
-  <section class="card" id="traffic" style="margin-top:1rem; display:none">
+  <section class="card" id="traffic" style="display:none">
     <h2>📊 Site Traffic</h2>
     <div id="traffic-body"><p class="notice">Loading…</p></div>
   </section>
-  <section class="card" style="margin-top:1rem">
+  <section class="card">
     <h2>Registered Spotters</h2>
-    <div id="list"><p class="notice">Loading spotters…</p></div>
+    <div id="list" class="table-scroll"><p class="notice">Loading spotters…</p></div>
   </section>
+  </div>
 </main>
-<footer>WWCS · Community weather for Washington State</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
 <script src="auth.js"></script>
 <script>
 (async function () {

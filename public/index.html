@@ -13,6 +13,9 @@
 <script src="/pwa.js" defer></script>
 <title>Washington Weather and Climate Services (WWCS)</title>
 <link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
@@ -30,10 +33,17 @@
 
 <main>
   <section class="hero">
-    <img class="logo" src="logo.webp" alt="Washington Weather and Climate Services logo">
-    <div>
-      <h1>Washington Weather and Climate Services</h1>
-      <p>Live, community-powered weather for the Evergreen State. Spotters observe, everyone benefits.</p>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow">Community weather for Washington State</span>
+        <h1>Washington Weather and Climate Services</h1>
+        <p class="tagline">Live, community-powered weather for the Evergreen State. Spotters observe, everyone benefits.</p>
+        <div class="hero-cta">
+          <a class="btn btn-lg" href="spotter.html">✍️ Become a Spotter</a>
+          <a class="btn btn-lg btn-ghost" href="#radar">🛰️ View Live Radar</a>
+        </div>
+      </div>
+      <img class="logo" src="logo.webp" alt="Washington Weather and Climate Services logo">
     </div>
   </section>
 
@@ -49,9 +59,10 @@
     </section>
   </div>
 
-  <section class="card" style="margin-top:1rem">
+  <div class="stack">
+  <section class="card">
     <h2>📍 Washington ZIP-Code Forecast</h2>
-    <form id="zipform" class="form-row" style="align-items:flex-end">
+    <form id="zipform" class="form-row">
       <div>
         <label for="zip">ZIP code</label>
         <input id="zip" inputmode="numeric" maxlength="5" placeholder="e.g. 98101" required>
@@ -62,7 +73,7 @@
     <div id="forecast"></div>
   </section>
 
-  <section class="card" style="margin-top:1rem">
+  <section class="card">
     <h2>🛰️ Live Radar</h2>
     <div class="radar-controls">
       <button class="btn" id="radar-play">⏸ Pause</button>
@@ -72,19 +83,25 @@
     <div id="radar"></div>
   </section>
 
-  <section class="card" style="margin-top:1rem">
+  <section class="card">
     <h2>Explore WWCS</h2>
     <div class="linklist">
-      <a href="observations.html">📡 Spotter observations — see what spotters are reporting →</a>
-      <a href="spotters.html">👥 Spotter Center — meet our weather spotters →</a>
-      <a href="blog.html">📰 Weather Blog — stories and analysis →</a>
-      <a href="chat.html">💬 Live Chat — talk weather with the community →</a>
-      <a href="spotter.html">✍️ Become a spotter — free registration →</a>
+      <a href="observations.html">📡 Spotter observations <span aria-hidden="true">→</span></a>
+      <a href="spotters.html">👥 Spotter Center <span aria-hidden="true">→</span></a>
+      <a href="blog.html">📰 Weather Blog <span aria-hidden="true">→</span></a>
+      <a href="chat.html">💬 Live Chat <span aria-hidden="true">→</span></a>
+      <a href="spotter.html">✍️ Become a spotter — free <span aria-hidden="true">→</span></a>
     </div>
   </section>
+  </div>
 </main>
 
-<footer>WWCS · Community weather for Washington State · Data: National Weather Service, Open-Meteo, RainViewer</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
 
 <script src="auth.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

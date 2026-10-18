@@ -13,6 +13,9 @@
 <script src="/pwa.js" defer></script>
 <title>Spotter Sign In / Register — WWCS</title>
 <link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,10 +28,14 @@
   </div>
 </header>
 <main>
+  <header class="page-intro">
+    <span class="eyebrow">Free to join</span>
+    <h1>Become a Weather Spotter</h1>
+    <p>Post observations, publish to the blog, and join the live chat. Free, always.</p>
+  </header>
   <div class="grid">
     <section class="card">
       <h2>Register as a Weather Spotter</h2>
-      <p>Free. Post observations, publish to the blog, and join the live chat.</p>
       <div class="error" id="regerr" style="display:none"></div>
       <div class="notice" id="regok" style="display:none"></div>
       <form id="regform">
@@ -42,7 +49,7 @@
         <input id="rpass" type="password" required minlength="8" autocomplete="new-password">
         <button class="btn" type="submit">Create spotter account</button>
       </form>
-      <p class="radar-legend">Your email is used only to sign you in. We never share it or send marketing mail.</p>
+      <p class="hint">Your email is used only to sign you in. We never share it or send marketing mail.</p>
     </section>
 
     <section class="card">
@@ -58,7 +65,12 @@
     </section>
   </div>
 </main>
-<footer>WWCS · Community weather for Washington State</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
 <script src="auth.js"></script>
 <script>
 renderHeader('spotter.html');

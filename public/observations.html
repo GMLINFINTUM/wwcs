@@ -13,6 +13,9 @@
 <script src="/pwa.js" defer></script>
 <title>Spotter Observations — WWCS</title>
 <link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,16 +28,28 @@
   </div>
 </header>
 <main>
+  <header class="page-intro">
+    <span class="eyebrow">Ground truth</span>
+    <h1>Spotter Observations</h1>
+    <p>Real conditions reported by volunteers across Washington — the ground truth behind the forecast.</p>
+  </header>
+  <div class="stack">
   <section class="card" id="submit">
     <h2>📡 Submit an Observation</h2>
     <div id="formwrap"><p class="notice">Checking sign-in…</p></div>
   </section>
-  <section class="card" style="margin-top:1rem">
+  <section class="card">
     <h2>All Spotter Observations</h2>
     <div id="list"><p class="notice">Loading observations…</p></div>
   </section>
+  </div>
 </main>
-<footer>WWCS · Community weather for Washington State</footer>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
 <script src="auth.js"></script>
 <script>
 const TYPES = ['Clear','Partly cloudy','Overcast','Fog','Drizzle','Rain','Heavy rain','Snow','Heavy snow','Thunderstorm','Hail','Wind','Flood','Other'];
