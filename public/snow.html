@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0b3d5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WWCS">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<script src="/pwa.js" defer></script>
+<title>W. WA Lowland Snowfall Threat Discussion — WWCS</title>
+<link rel="icon" type="image/webp" href="icon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="styles.v3.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+#snowmap { height: 460px; border-radius: 12px; border: 1px solid var(--line); z-index: 0; }
+#snowmap.drawing { cursor: crosshair; }
+.snow-toolbar { display: none; gap: .6rem; align-items: center; flex-wrap: wrap; margin: .75rem 0; }
+.snow-toolbar.on { display: flex; }
+.snow-legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .82rem; color: var(--muted); margin-top: .6rem; }
+.snow-legend .sw { display: inline-block; width: .9rem; height: .9rem; border-radius: 3px; margin-right: .3rem; vertical-align: -1px; }
+.snow-draw-hint { display: none; margin: .5rem 0; }
+.snow-draw-hint.on { display: block; }
+#snow-draw-form { display: none; margin-top: .75rem; }
+#snow-draw-form.on { display: block; }
+.snow-post-admin { font-size: .78rem; color: var(--teal); font-weight: 700; }
+.snow-del { font-size: .78rem; color: var(--danger); background: none; border: 0; cursor: pointer; padding: 0; font-weight: 600; }
+.snow-del:hover { text-decoration: underline; }
+.leaflet-popup-content .snow-del { margin-top: .3rem; display: inline-block; }
+@media (max-width: 640px) { #snowmap { height: 340px; } }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img src="icon.webp" alt="WWCS logo">
+      <span><span class="name">WWCS</span><br><span class="tag">Washington Weather and Climate Services</span></span>
+    </a>
+    <nav class="main" id="mainnav"></nav>
+    <span class="userbox" id="userbox"></span>
+  </div>
+</header>
+
+<main>
+  <div class="page-intro">
+    <span class="eyebrow">Western Washington</span>
+    <h1>Lowland Snowfall Threat Discussion</h1>
+    <p>Official snowfall threat outlooks for the western Washington lowlands, plotted and written by the WWCS administrator.</p>
+  </div>
+
+  <div class="stack">
+    <section class="card">
+      <h2>Threat Map — Western Washington</h2>
+      <div class="snow-toolbar" id="snow-toolbar">
+        <button class="btn" id="snow-draw-toggle" type="button">Plot warning area</button>
+        <span class="hint">Admin only — draws a new threat area on the map.</span>
+      </div>
+      <p class="notice snow-draw-hint" id="snow-draw-hint">Click the map to drop points around the threat area. Double-click (or press Finish) to close the shape.</p>
+      <div id="snowmap"></div>
+      <div id="snow-draw-form">
+        <div class="form-row">
+          <div>
+            <label for="snow-label">Area label</label>
+            <input id="snow-label" maxlength="120" placeholder="e.g. Seattle metro — lowland snow watch">
+          </div>
+          <div style="flex:0 0 180px">
+            <label for="snow-severity">Threat level</label>
+            <select id="snow-severity">
+              <option value="potential">Potential</option>
+              <option value="watch" selected>Watch</option>
+              <option value="warning">Warning</option>
+            </select>
+          </div>
+          <div style="flex:0 0 auto; display:flex; gap:.5rem; align-items:flex-end; padding-bottom:.85rem">
+            <button class="btn" id="snow-save" type="button">Save</button>
+            <button class="btn secondary" id="snow-cancel" type="button">Cancel</button>
+          </div>
+        </div>
+        <div class="error" id="snow-draw-err" style="display:none"></div>
+      </div>
+      <div class="snow-legend">
+        <span><span class="sw" style="background:#2fa8c9"></span>Potential</span>
+        <span><span class="sw" style="background:#f2a03d"></span>Watch</span>
+        <span><span class="sw" style="background:#c0392b"></span>Warning</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Administrator Discussion</h2>
+      <div id="snow-admin-form" style="display:none">
+        <label for="snow-body">New discussion post <span class="snow-post-admin">(admin only)</span></label>
+        <textarea id="snow-body" maxlength="5000" placeholder="Write the latest lowland snow threat discussion…"></textarea>
+        <button class="btn" id="snow-post-btn" type="button">Publish</button>
+        <div class="error" id="snow-post-err" style="display:none"></div>
+      </div>
+      <p class="hint" id="snow-readonly-note" style="display:none">Discussion posts are published by the WWCS administrator.</p>
+      <div id="snow-posts" style="margin-top:1rem"><p class="notice">Loading discussion…</p></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p><strong>WWCS</strong> · Community weather for Washington State</p>
+    <p class="fineprint">Data: National Weather Service, Open-Meteo, RainViewer</p>
+  </div>
+</footer>
+
+<script src="auth.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(async function () {
+  const user = await renderHeader('snow.html');
+  const isAdmin = !!(user && user.is_admin);
+
+  // ---- Map ----
+  const map = L.map('snowmap', { doubleClickZoom: false }).setView([47.35, -122.1], 8);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors', maxZoom: 12,
+  }).addTo(map);
+
+  const SEV_STYLE = {
+    potential: { color: '#2fa8c9', fillColor: '#2fa8c9' },
+    watch:     { color: '#f2a03d', fillColor: '#f2a03d' },
+    warning:   { color: '#c0392b', fillColor: '#c0392b' },
+  };
+  const SEV_NAME = { potential: 'Potential', watch: 'Watch', warning: 'Warning' };
+  let warnLayer = null;
+
+  async function loadWarnings() {
+    try {
+      const { warnings } = await api('/api/snow/warnings');
+      if (warnLayer) map.removeLayer(warnLayer);
+      warnLayer = L.geoJSON(warnings.map(w => {
+        const g = JSON.parse(w.geojson);
+        g.properties = { _id: w.id, _label: w.label, _sev: w.severity, _at: w.created_at };
+        return g;
+      }), {
+        style: f => ({ ...(SEV_STYLE[f.properties._sev] || SEV_STYLE.watch), weight: 2, fillOpacity: 0.25 }),
+        onEachFeature: (f, layer) => {
+          const p = f.properties;
+          const del = isAdmin ? `<br><button class="snow-del" data-delwarn="${p._id}">Remove area</button>` : '';
+          layer.bindPopup(`<strong>${escapeHtml(p._label)}</strong><br><span style="color:#5b7683;font-size:.8rem">${escapeHtml(SEV_NAME[p._sev] || p._sev)} · ${fmtDate(p._at)}</span>${del}`);
+        },
+      }).addTo(map);
+    } catch (e) {
+      console.error('warnings failed:', e.message);
+    }
+  }
+
+  document.getElementById('snowmap').addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-delwarn]');
+    if (!btn) return;
+    if (!confirm('Remove this warning area?')) return;
+    try {
+      await api('/api/snow/warnings/' + btn.dataset.delwarn, { method: 'DELETE' });
+      loadWarnings();
+    } catch (err) { alert(err.message); }
+  });
+
+  // ---- Admin polygon drawing ----
+  const toolbar = document.getElementById('snow-toolbar');
+  const hint = document.getElementById('snow-draw-hint');
+  const drawForm = document.getElementById('snow-draw-form');
+  const drawErr = document.getElementById('snow-draw-err');
+  const toggleBtn = document.getElementById('snow-draw-toggle');
+  let drawing = false, drawPts = [], drawLine = null;
+
+  if (isAdmin) toolbar.classList.add('on');
+
+  function setDrawing(on) {
+    drawing = on;
+    drawPts = [];
+    if (drawLine) { map.removeLayer(drawLine); drawLine = null; }
+    document.getElementById('snowmap').classList.toggle('drawing', on);
+    hint.classList.toggle('on', on);
+    drawForm.classList.toggle('on', false);
+    showError(drawErr, '');
+    toggleBtn.textContent = on ? 'Finish shape' : 'Plot warning area';
+    map.doubleClickZoom[on ? 'disable' : 'enable']();
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    if (drawing) {
+      if (drawPts.length < 3) { showError(drawErr, 'Drop at least 3 points first.'); return; }
+      drawForm.classList.add('on');
+      document.getElementById('snow-label').focus();
+    } else setDrawing(true);
+  });
+
+  map.on('click', (e) => {
+    if (!drawing || drawForm.classList.contains('on')) return;
+    drawPts.push(e.latlng);
+    if (drawLine) map.removeLayer(drawLine);
+    drawLine = L.polyline([...drawPts, drawPts[0]], { color: '#0e7c86', weight: 2, dashArray: '6 6' }).addTo(map);
+  });
+  map.on('dblclick', () => { if (drawing && drawPts.length >= 3 && isAdmin) toggleBtn.click(); });
+
+  document.getElementById('snow-cancel').addEventListener('click', () => setDrawing(false));
+
+  document.getElementById('snow-save').addEventListener('click', async () => {
+    const label = document.getElementById('snow-label').value.trim();
+    const severity = document.getElementById('snow-severity').value;
+    showError(drawErr, '');
+    if (!label) { showError(drawErr, 'Give the area a label.'); return; }
+    const ring = drawPts.map(p => [+p.lng.toFixed(5), +p.lat.toFixed(5)]);
+    ring.push(ring[0]);
+    try {
+      await api('/api/snow/warnings', {
+        method: 'POST',
+        body: JSON.stringify({ label, severity, geojson: { type: 'Polygon', coordinates: [ring] } }),
+      });
+      document.getElementById('snow-label').value = '';
+      setDrawing(false);
+      loadWarnings();
+    } catch (err) { showError(drawErr, err.message); }
+  });
+
+  // ---- Discussion ----
+  const postsEl = document.getElementById('snow-posts');
+  const adminForm = document.getElementById('snow-admin-form');
+  const readonlyNote = document.getElementById('snow-readonly-note');
+  if (isAdmin) adminForm.style.display = '';
+  else readonlyNote.style.display = '';
+
+  async function loadPosts() {
+    try {
+      const { posts } = await api('/api/snow/posts');
+      postsEl.innerHTML = posts.length ? posts.map(p => `
+        <div class="post">
+          <div class="body">${escapeHtml(p.body)}</div>
+          <div class="meta">${escapeHtml(p.author || 'WWCS')} · ${fmtDate(p.created_at)}
+            ${isAdmin ? ` · <button class="snow-del" data-delpost="${p.id}">Delete</button>` : ''}</div>
+        </div>`).join('')
+        : '<p class="notice">No discussion posts yet. Check back when winter weather threatens the lowlands.</p>';
+    } catch (e) {
+      postsEl.innerHTML = '<p class="error">Could not load the discussion.</p>';
+    }
+  }
+
+  postsEl.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-delpost]');
+    if (!btn) return;
+    if (!confirm('Delete this post?')) return;
+    try {
+      await api('/api/snow/posts/' + btn.dataset.delpost, { method: 'DELETE' });
+      loadPosts();
+    } catch (err) { alert(err.message); }
+  });
+
+  document.getElementById('snow-post-btn').addEventListener('click', async () => {
+    const bodyEl = document.getElementById('snow-body');
+    const errEl = document.getElementById('snow-post-err');
+    showError(errEl, '');
+    try {
+      await api('/api/snow/posts', { method: 'POST', body: JSON.stringify({ body: bodyEl.value }) });
+      bodyEl.value = '';
+      loadPosts();
+    } catch (err) { showError(errEl, err.message); }
+  });
+
+  loadWarnings();
+  loadPosts();
+})();
+</script>
+</body>
+</html>

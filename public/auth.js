@@ -28,6 +28,7 @@ async function renderHeader(active) {
       ['index.html', 'Home'],
       ['observations.html', 'Observations'],
       ['spotters.html', 'Spotter Center'],
+      ['snow.html', 'Snow Threat'],
       ['blog.html', 'Blog'],
       ['chat.html', 'Live Chat'],
       ['about.html', 'About Us'],
@@ -37,8 +38,9 @@ async function renderHeader(active) {
       .join('');
   }
   if (box) {
+    const adminTag = user && user.is_admin ? ' (Administrator)' : '';
     box.innerHTML = user
-      ? `Hi, <strong>${escapeHtml(user.name)}</strong> · <a href="#" id="logout">Sign out</a>`
+      ? `Hi, <strong>${escapeHtml(user.name)}${adminTag}</strong> · <a href="#" id="logout">Sign out</a>`
       : `<a href="spotter.html">Spotter sign in / Register</a>`;
     const lo = document.getElementById('logout');
     if (lo) lo.addEventListener('click', async (e) => {
