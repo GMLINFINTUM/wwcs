@@ -46,6 +46,31 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Site administrator flag (the WWCS owner). The earliest-registered spotter is
+-- promoted automatically the first time this migration runs when no admin exists.
+ALTER TABLE spotters ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE;
+
+UPDATE spotters SET is_admin = TRUE
+ WHERE id = (SELECT MIN(id) FROM spotters)
+   AND NOT EXISTS (SELECT 1 FROM spotters WHERE is_admin = TRUE);
+
+-- W. WA lowland snowfall threat discussion (admin-posted) and warning plots.
+CREATE TABLE IF NOT EXISTS snow_posts (
+  id         SERIAL PRIMARY KEY,
+  spotter_id INTEGER NOT NULL REFERENCES spotters(id) ON DELETE CASCADE,
+  body       TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS snow_warnings (
+  id         SERIAL PRIMARY KEY,
+  spotter_id INTEGER NOT NULL REFERENCES spotters(id) ON DELETE CASCADE,
+  label      TEXT NOT NULL,
+  severity   TEXT NOT NULL DEFAULT 'watch',
+  geojson    TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS idx_observations_created ON observations(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_blog_created        ON blog_posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_chat_created        ON chat_messages(created_at DESC);

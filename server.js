@@ -68,12 +68,24 @@ async function currentUser(req) {
   const token = parseCookies(req)[SESSION_COOKIE];
   if (!token) return null;
   const { rows } = await pool.query(
-    `SELECT s.id, s.name, s.email, s.county, s.created_at
+    `SELECT s.id, s.name, s.email, s.county, s.is_admin, s.created_at
        FROM spotters s JOIN sessions t ON t.spotter_id = s.id
       WHERE t.token = $1 AND t.expires_at > NOW()`,
     [token]
   );
   return rows[0] || null;
+}
+
+async function requireAdmin(req, res, next) {
+  try {
+    const user = await currentUser(req);
+    if (!user) return res.status(401).json({ error: 'Please sign in first.' });
+    if (!user.is_admin) return res.status(403).json({ error: 'Administrator only.' });
+    req.user = user;
+    next();
+  } catch (err) {
+    res.status(500).json({ error: 'Auth lookup failed.' });
+  }
 }
 
 async function requireAuth(req, res, next) {
@@ -309,6 +321,109 @@ app.post('/api/chat', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Could not send message.' });
+  }
+});
+
+// ---- W. WA lowland snowfall threat: discussion + warning plots ----
+app.get('/api/snow/posts', async (req, res) => {
+  if (needDb(res)) return;
+  try {
+    const { rows } = await pool.query(
+      `SELECT p.*, s.name AS author FROM snow_posts p
+         JOIN spotters s ON s.id = p.spotter_id
+        ORDER BY p.created_at DESC LIMIT 100`
+    );
+    res.json({ posts: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not load discussion.' });
+  }
+});
+
+app.post('/api/snow/posts', requireAdmin, async (req, res) => {
+  const { body } = req.body || {};
+  if (!body || !body.trim()) return res.status(400).json({ error: 'Write something first.' });
+  if (body.length > 5000) return res.status(400).json({ error: 'Post is too long (max 5000 characters).' });
+  try {
+    const { rows } = await pool.query(
+      'INSERT INTO snow_posts (spotter_id, body) VALUES ($1,$2) RETURNING *',
+      [req.user.id, body.trim()]
+    );
+    res.json({ post: rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not publish post.' });
+  }
+});
+
+app.delete('/api/snow/posts/:id', requireAdmin, async (req, res) => {
+  if (needDb(res)) return;
+  try {
+    await pool.query('DELETE FROM snow_posts WHERE id = $1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not delete post.' });
+  }
+});
+
+const SNOW_SEVERITIES = ['potential', 'watch', 'warning'];
+
+app.get('/api/snow/warnings', async (req, res) => {
+  if (needDb(res)) return;
+  try {
+    const { rows } = await pool.query('SELECT * FROM snow_warnings ORDER BY created_at DESC LIMIT 100');
+    res.json({ warnings: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not load warnings.' });
+  }
+});
+
+app.post('/api/snow/warnings', requireAdmin, async (req, res) => {
+  const { label, severity, geojson } = req.body || {};
+  if (!label || !label.trim()) return res.status(400).json({ error: 'Label is required.' });
+  if (!SNOW_SEVERITIES.includes(severity)) {
+    return res.status(400).json({ error: 'Severity must be potential, watch, or warning.' });
+  }
+  let geom;
+  try {
+    geom = typeof geojson === 'string' ? JSON.parse(geojson) : geojson;
+  } catch {
+    return res.status(400).json({ error: 'Invalid shape data.' });
+  }
+  if (!geom || (geom.type !== 'Polygon' && geom.type !== 'MultiPolygon')) {
+    return res.status(400).json({ error: 'Warning area must be a polygon.' });
+  }
+  try {
+    const ring = geom.type === 'Polygon' ? geom.coordinates[0] : geom.coordinates[0][0];
+    if (!Array.isArray(ring) || ring.length < 4 || ring.length > 500) {
+      return res.status(400).json({ error: 'Polygon must have 4–500 points.' });
+    }
+    for (const [lng, lat] of ring) {
+      if (typeof lng !== 'number' || typeof lat !== 'number' || lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+        return res.status(400).json({ error: 'Invalid coordinates in polygon.' });
+      }
+    }
+    const { rows } = await pool.query(
+      'INSERT INTO snow_warnings (spotter_id, label, severity, geojson) VALUES ($1,$2,$3,$4) RETURNING *',
+      [req.user.id, label.trim().slice(0, 120), severity, JSON.stringify(geom)]
+    );
+    res.json({ warning: rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not save warning.' });
+  }
+});
+
+app.delete('/api/snow/warnings/:id', requireAdmin, async (req, res) => {
+  if (needDb(res)) return;
+  try {
+    await pool.query('DELETE FROM snow_warnings WHERE id = $1', [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not delete warning.' });
   }
 });
 
