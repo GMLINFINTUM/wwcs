@@ -1,13 +1,13 @@
 // WWCS service worker — app-shell caching with fresh data.
 // Static assets: cache-first. Pages and API: network-first, cache fallback.
-const VERSION = 'wwcs-v2';
+const VERSION = 'wwcs-v3';
 const STATIC_CACHE = VERSION + '-static';
 const PAGE_CACHE = VERSION + '-pages';
 
 const PRECACHE = [
   '/',
   '/index.html',
-  '/styles.css',
+  '/styles.v3.css',
   '/auth.js',
   '/pwa.js',
   '/manifest.webmanifest',
